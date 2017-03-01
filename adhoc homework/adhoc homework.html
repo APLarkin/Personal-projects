@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Household builder</title>
+        <style>
+            .debug {
+                font-family: monospace;
+                border: 1px solid black;
+                padding: 10px;
+                display: none;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Household builder</h1>
+        <div class="builder">
+            <ol class="household"></ol>
+            <form>
+                <div>
+                    <label>Age
+                        <input type="text" name="age">
+                    </label>
+                </div>
+                <div>
+                    <label>Relationship
+                        <select name="rel">
+                            <option value="">---</option>
+                            <option value="self">Self</option>
+                            <option value="spouse">Spouse</option>
+                            <option value="child">Child</option>
+                            <option value="parent">Parent</option>
+                            <option value="grandparent">Grandparent</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </label>
+                </div>
+                <div>
+                    <label>Smoker?
+                        <input type="checkbox" name="smoker">
+                    </label>
+                </div>
+                <div>
+                    <button class="add">add</button>
+                </div>
+                <div>
+                    <button type="submit">submit</button>
+                </div>
+            </form>
+        </div>
+        <pre class="debug"></pre>
+        <script>
+			//I cannot be sure that this works because when I was trying to test it via some online testbed platforms it would always
+			//give me some form of error, even when I just took the original contents of the HTML directly from the github page
+			//and tried to test it without any modifications by me.
+			//However, I am confident that my logic is sound and even if there are some issues they should be minor.
+			
+			
+			//Create a household list array to hold all members.
+			//Array is 2D and is comprised of an ID on the left and age/relationship/smoker (0,1,2) on the right.
+			var householdList = [[],[]];
+			//ID variable
+			var ID = 0;
+			//Need to add an onclick listener to the "add" button.
+			window.onload = function addAdd(){
+				//Gets the "add" button element
+				var addButton = document.getElementsByClassName("add")[0];
+				//On click
+				addButton.addEventListener("click", function(e){
+					//Validate the age
+					function ValidateAge(){
+						//Get value of the age form
+						var getAge = document.getElementsByName("age")[0].value;
+						//Check if age is > 0. If not, returns false.
+						if(getAge < 1)
+						{
+							return false;
+						}
+						//If it is valid, submits the data to the household list array.
+						else
+						{
+							housholdList[ID][0] = getAge;
+						}
+					}
+					//Validate the relationship form.
+					function ValidateRelationship(){
+						//Get possible values of "relationship" dropdown.
+						var getRelVals = document.getElementsByName("rel");
+						//Get selected value of relationship.
+						var getRel = getRelVals.options[getRelVals.selectedIndex].text;
+						//If the relationship is "---" option, returns false.
+						if(getRel == "---")
+						{
+							return false;
+						}
+						//Otherwise, adds the relationship to the list.
+						else
+						{
+							housholdList[ID][1] = getRel;
+						}
+					}
+					//Adds smoker status
+					function checkSmoker(){
+						//If the "smoker" checkbox is checked, adds the value smoker to the list
+						if(document.getElementsByName("smoker")[0].checked){
+							householdList[ID][2] = "Smoker";
+						}
+						//Else, adds the "nonsmoker" value
+						else{
+							householdList[ID][2] = "Nonsmoker";
+						}
+					}
+					//To display list
+					//Iterates through IDs
+					for (i = 0; i < ID; i++)
+					{
+						//Iterates through each data value for each ID
+						for(j = 0; j < 3; j++)
+						{
+							//Displays the contents of the housholdList at the specified indices to the pre tag "debug"
+							document.getElementsByClassName("debug")[0].innerHTML = housholdList[i][j];
+						}
+					}
+					//Increases ID value
+					ID++;
+				}, false);
+			}
+			//Adds a delete button to the page
+			//It wasn't specified what the exact functionality had to be so I am just stripping the last added item on HousholdList
+			var deleteButton = document.createElement("BUTTON");
+			var deleteButtonText = document.createTextNode("Delete entry");
+			deleteButton.appendChild(deleteButtonText);
+			document.body.appendChild(deleteButton);
+			deleteButton.className = "deleteLastEntry";
+			//Adds an event listener function to carry out the task.
+			deleteButton.addEventListener("click", function(e){
+				//Remove most recent value.
+				householdList.splice(ID-1,1);
+				//Reset ID to previous value
+				ID = ID-1;
+			},false);
+			//I wasn't sure what "fake trip to server" was supposed to mean here.
+			//Need a listener for submit button
+			window.onload = function addSubmit(){
+				//Gets the "submit" button element
+				var addButton = document.getElementsByTagName("button")[1];
+				//On click function for submit button.
+				addButton.addEventListener("click", function(e){
+					//serialize as JSON
+					var hhtoJSON = JSON.stringify(householdList);
+					//Displays the serialized values
+					document.getElementsByClassName("debug")[0].innerHTML = hhtoJSON;
+				}, false);
+			}
+        </script>
+    </body>
+</html>
